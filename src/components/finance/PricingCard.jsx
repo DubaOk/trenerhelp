@@ -43,14 +43,14 @@ export default function PricingCard() {
 
       {!editing ? (
         <p className="mt-1 text-sm text-text-secondary">
-          Обычная: <b className="text-text-primary">{pricing.singlePrice} Br</b> · Сплит (в паре):{' '}
+          Персональная: <b className="text-text-primary">{pricing.singlePrice} Br</b> · Сплит (в паре):{' '}
           <b className="text-text-primary">{pricing.pairPrice} Br</b> с человека
         </p>
       ) : (
         <div className="mt-3 flex flex-col gap-3">
           <div className="grid grid-cols-2 gap-3">
             <label className="flex flex-col gap-1.5">
-              <span className="text-sm font-medium text-text-secondary">Обычная, Br</span>
+              <span className="text-sm font-medium text-text-secondary">Персональная, Br</span>
               <input
                 value={single}
                 onChange={(e) => setSingle(e.target.value)}

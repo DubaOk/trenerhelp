@@ -61,19 +61,41 @@
 html {
   -webkit-tap-highlight-color: transparent;
   color-scheme: light;
+  height: 100%;
+  /* lock the document: only inner containers scroll — kills iOS rubber-band drag of the whole app */
+  overflow: hidden;
+  overscroll-behavior: none;
 }
 
 body {
   margin: 0;
+  height: 100%;
+  overflow: hidden;
   background: var(--color-bg-base);
   color: var(--color-text-primary);
   font-family: var(--font-sans);
+  position: fixed;
+  inset: 0;
+  width: 100%;
 }
 
 #root {
-  min-height: 100svh;
+  height: 100%;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
+}
+
+/* modal sheets: keep touch scrolling inside, never hand it to the page behind */
+.sheet-scroll {
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+  -webkit-overflow-scrolling: touch;
+}
+
+.backdrop-lock {
+  touch-action: none;
+  overscroll-behavior: contain;
 }
 
 button {

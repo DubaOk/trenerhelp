@@ -21,7 +21,7 @@ export default function WelcomeScreen({ onDone }) {
   }
 
   return (
-    <div className="mx-auto flex min-h-svh w-full max-w-lg flex-col items-center justify-center gap-6 bg-bg-base px-6 text-center">
+    <div className="sheet-scroll mx-auto flex h-full w-full max-w-lg flex-col items-center justify-center gap-6 overflow-y-auto bg-bg-base px-6 text-center">
       <img src={`${import.meta.env.BASE_URL}icons/icon.svg`} alt="" className="h-20 w-20 rounded-3xl" />
       <div>
         <h1 className="text-2xl  text-text-primary">TrenerHelp</h1>

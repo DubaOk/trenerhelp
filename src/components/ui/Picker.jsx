@@ -59,7 +59,7 @@ export default function Picker({
 
       {open &&
         createPortal(
-          <div className="anim-backdrop fixed inset-0 z-[60] flex items-end justify-center bg-black/40" onClick={() => setOpen(false)}>
+          <div className="anim-backdrop backdrop-lock fixed inset-0 z-[60] flex items-end justify-center bg-black/40" onClick={() => setOpen(false)}>
             <div
               className="anim-sheet flex max-h-[80svh] w-full max-w-lg flex-col rounded-t-3xl bg-white pb-[calc(16px+env(safe-area-inset-bottom))] pt-4"
               onClick={(e) => e.stopPropagation()}
@@ -84,7 +84,7 @@ export default function Picker({
                 </div>
               )}
 
-              <div className="min-h-0 flex-1 overflow-y-auto px-3">
+              <div className="sheet-scroll min-h-0 flex-1 overflow-y-auto px-3">
                 {filtered.length === 0 && (
                   <p className="px-4 py-6 text-center text-sm text-text-secondary">Ничего не найдено</p>
                 )}

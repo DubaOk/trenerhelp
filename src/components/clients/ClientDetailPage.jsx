@@ -15,7 +15,6 @@ import MeasurementChart from './MeasurementChart'
 import ClientPaymentsList from './ClientPaymentsList'
 import SessionForm from '../schedule/SessionForm'
 import PaymentForm from '../finance/PaymentForm'
-import SubscriptionProgress from './SubscriptionProgress'
 import ContactRow from './ContactRow'
 
 export default function ClientDetailPage() {
@@ -29,11 +28,13 @@ export default function ClientDetailPage() {
   const [measurementFormOpen, setMeasurementFormOpen] = useState(false)
   const [paymentFormOpen, setPaymentFormOpen] = useState(false)
   const [notes, setNotes] = useState(null)
+  const [notebook, setNotebook] = useState(null)
 
   if (!data) return null
 
   const { client, sessions, payments, subscriptionTypes, statusColor, label } = data
   const currentNotes = notes ?? client.notes ?? ''
+  const currentNotebook = notebook ?? client.notebook ?? ''
 
   async function handleDelete() {
     await db.transaction('rw', db.clients, db.sessions, db.payments, async () => {
@@ -47,6 +48,12 @@ export default function ClientDetailPage() {
   async function handleNotesBlur() {
     if (notes !== null && notes !== client.notes) {
       await db.clients.update(client.id, { notes })
+    }
+  }
+
+  async function handleNotebookBlur() {
+    if (notebook !== null && notebook !== client.notebook) {
+      await db.clients.update(client.id, { notebook })
     }
   }
 
@@ -76,7 +83,6 @@ export default function ClientDetailPage() {
             <Badge status={statusColor}>{label}</Badge>
           </div>
 
-          <SubscriptionProgress money={data.money} />
 
           {client.phone && <ContactRow phone={client.phone} />}
 
@@ -86,12 +92,12 @@ export default function ClientDetailPage() {
         </div>
 
         <section>
-          <h2 className="mb-2 px-1 text-base text-text-primary">Заметки</h2>
+          <h2 className="mb-2 px-1 text-base text-text-primary">Информация о здоровье</h2>
           <textarea
             value={currentNotes}
             onChange={(e) => setNotes(e.target.value)}
             onBlur={handleNotesBlur}
-            placeholder="Заметки о клиенте"
+            placeholder="Травмы, ограничения, особенности здоровья"
             rows={3}
             className="w-full resize-none rounded-2xl bg-white p-4 text-sm outline-none focus:ring-2 focus:ring-brand-soft"
           />
@@ -125,6 +131,21 @@ export default function ClientDetailPage() {
             </Button>
           </div>
           <ClientPaymentsList payments={payments} subscriptionTypes={subscriptionTypes} />
+        </section>
+
+        <section>
+          <h2 className="mb-2 px-1 text-base text-text-primary">Заметки</h2>
+          <div className="rounded-[16px_0_0_0] bg-ivory p-1">
+            <textarea
+              value={currentNotebook}
+              onChange={(e) => setNotebook(e.target.value)}
+              onBlur={handleNotebookBlur}
+              placeholder={'Рабочий блокнот по клиенту:\nупражнения, рабочие веса, что даётся тяжело,\nчто добавить в следующий раз…'}
+              rows={8}
+              className="w-full resize-none rounded-[14px_0_0_0] bg-ivory p-4 text-sm leading-6 text-text-primary outline-none placeholder:text-text-secondary/70"
+            />
+          </div>
+          <p className="mt-1 px-1 text-xs text-text-secondary">Сохраняется автоматически</p>
         </section>
       </div>
 
