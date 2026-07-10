@@ -1,0 +1,192 @@
+@import '@fontsource/inter/400.css';
+@import '@fontsource/inter/500.css';
+@import '@fontsource/inter/600.css';
+@import '@fontsource/space-grotesk/400.css';
+@import "tailwindcss";
+
+@theme {
+  /* Ventriloc palette: warm paper monochrome + ember accent */
+  --color-graphite: #202020;
+  --color-canvas: #ffffff;
+  --color-ash: #efefef;
+  --color-fog: #f5f5f5;
+  --color-ivory: #ebe6dd;
+  --color-steel: #4d4d4d;
+  --color-slate: #828282;
+  --color-mist: #e8e8e8;
+  --color-ember: #ff682c;
+  --color-brass: #816729;
+
+  /* semantic tokens used across components */
+  --color-brand: #202020;
+  --color-brand-dark: #000000;
+  --color-brand-soft: #ebe6dd;
+
+  --color-bg-base: #efefef;
+
+  --color-text-primary: #202020;
+  --color-text-secondary: #828282;
+
+  /* functional status colors — kept for data semantics, muted to sit in the warm system */
+  --color-status-ok: #4a7250;
+  --color-status-ok-bg: #e6ece5;
+  --color-status-warn: #a87c1f;
+  --color-status-warn-bg: #f3ecd9;
+  --color-status-danger: #b8452f;
+  --color-status-danger-bg: #f5e2dc;
+
+  /* payment methods = the two warm accents of the system */
+  --color-method-cash: #e2571a;
+  --color-method-cash-bg: #fbe5d9;
+  --color-method-reception: #7d5c00;
+  --color-method-reception-bg: #ede7d2;
+
+  --font-sans: 'Inter', system-ui, "Segoe UI", Roboto, sans-serif;
+  --font-heading: 'Space Grotesk', 'Inter', system-ui, sans-serif;
+}
+
+/* NBRB font: official Belarusian ruble symbol at U+E901 */
+@font-face {
+  font-family: 'NBRB';
+  src: url('/fonts/nbrb.woff2') format('woff2'), url('/fonts/nbrb.woff') format('woff'),
+    url('/fonts/nbrb.ttf') format('truetype');
+  font-weight: 400;
+  font-display: swap;
+}
+
+.font-nbrb {
+  font-family: 'NBRB', var(--font-sans);
+}
+
+html {
+  -webkit-tap-highlight-color: transparent;
+  color-scheme: light;
+}
+
+body {
+  margin: 0;
+  background: var(--color-bg-base);
+  color: var(--color-text-primary);
+  font-family: var(--font-sans);
+}
+
+#root {
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+}
+
+button {
+  font-family: inherit;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-heading);
+  font-weight: 400;
+  letter-spacing: -0.02em;
+}
+
+/* ---------- Animations ---------- */
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes sheet-up {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes pop-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+  70% {
+    transform: scale(1.08);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.anim-page {
+  /* opacity only: any transform on this ancestor would re-anchor position:fixed children (FAB) */
+  animation: fade-in 0.25s ease-out backwards;
+}
+
+.anim-card {
+  animation: fade-in-up 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.anim-backdrop {
+  animation: fade-in 0.2s ease-out both;
+}
+
+.anim-sheet {
+  animation: sheet-up 0.32s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.anim-dialog {
+  animation: scale-in 0.2s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.anim-pop {
+  animation: pop-in 0.3s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.press {
+  transition: transform 0.12s ease, background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.press:active {
+  transform: scale(0.97);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .anim-page,
+  .anim-card,
+  .anim-backdrop,
+  .anim-sheet,
+  .anim-dialog,
+  .anim-pop {
+    animation: none;
+  }
+  .press:active {
+    transform: none;
+  }
+}
