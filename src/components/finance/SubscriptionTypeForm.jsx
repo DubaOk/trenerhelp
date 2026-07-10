@@ -12,6 +12,7 @@ export default function SubscriptionTypeForm({ open, onClose, type }) {
   const [price, setPrice] = useState(type?.price != null ? String(type.price) : '')
   const [isUnlimited, setIsUnlimited] = useState(type?.isUnlimited ?? false)
   const [sessionsCount, setSessionsCount] = useState(type?.sessionsCount != null ? String(type.sessionsCount) : '')
+  const [bonus, setBonus] = useState(type?.bonus ? String(type.bonus) : '')
   const [confirmOpen, setConfirmOpen] = useState(false)
 
   async function handleSubmit(e) {
@@ -24,6 +25,7 @@ export default function SubscriptionTypeForm({ open, onClose, type }) {
       price: Number(price),
       isUnlimited,
       sessionsCount: isUnlimited ? null : Number(sessionsCount),
+      bonus: bonus ? Number(bonus) : 0,
     }
 
     if (isEdit) {
@@ -66,6 +68,20 @@ export default function SubscriptionTypeForm({ open, onClose, type }) {
             required
           />
         )}
+
+        <div>
+          <Input
+            label="Бонус на баланс, Br (необязательно)"
+            value={bonus}
+            onChange={(e) => setBonus(e.target.value)}
+            type="number"
+            inputMode="decimal"
+            placeholder="0"
+          />
+          <p className="mt-1 text-xs text-text-secondary">
+            Для акций: например «9+1» — клиент платит за 9 тренировок, а бонус 35 Br покрывает десятую
+          </p>
+        </div>
 
         <Button type="submit" className="w-full">
           Сохранить

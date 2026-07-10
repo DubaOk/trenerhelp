@@ -22,7 +22,7 @@ export async function seedDefaults() {
     await db.subscriptionTypes.bulkAdd([
       { id: genId(), name: 'Разовое', sessionsCount: 1, isUnlimited: false, price: 35 },
       { id: genId(), name: 'Разовое (в паре)', sessionsCount: 1, isUnlimited: false, price: 30 },
-      { id: genId(), name: '10 занятий (акция 9+1)', sessionsCount: 10, isUnlimited: false, price: 315 },
+      { id: genId(), name: '10 занятий (акция 9+1)', sessionsCount: 10, isUnlimited: false, price: 315, bonus: 35 },
     ])
   })
 }
@@ -71,10 +71,10 @@ export async function seedDemo() {
     await db.clients.bulkAdd([anna, boris, ekaterina])
 
     await db.payments.bulkAdd([
-      { id: genId(), clientId: anna.id, subscriptionTypeId: promo.id, amount: promo.price, priceApplied: promo.price, date: addDays(today(), -20), method: 'cash' },
-      { id: genId(), clientId: boris.id, subscriptionTypeId: single.id, amount: single.price, priceApplied: single.price, date: addDays(today(), -15), method: 'reception' },
+      { id: genId(), clientId: anna.id, subscriptionTypeId: promo.id, amount: promo.price, bonus: 35, date: addDays(today(), -20), method: 'cash' },
+      { id: genId(), clientId: boris.id, subscriptionTypeId: single.id, amount: single.price, date: addDays(today(), -15), method: 'reception' },
       // Ekaterina paid 50 for a single (35) — 15 stays on her balance
-      { id: genId(), clientId: ekaterina.id, subscriptionTypeId: single.id, amount: 50, priceApplied: single.price, date: addDays(today(), -5), method: 'cash' },
+      { id: genId(), clientId: ekaterina.id, subscriptionTypeId: single.id, amount: 50, date: addDays(today(), -5), method: 'cash' },
     ])
 
     const sessions = []

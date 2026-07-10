@@ -1,31 +1,24 @@
-const FREE_EVERY = 10 // every 10th attended session is a gift
-
 // fallback for attended sessions saved before price snapshots existed
 export function fallbackSessionPrice(session, pricing) {
   return session.pairId ? pricing.pairPrice : pricing.singlePrice
 }
 
 export function computeMoney(clientId, payments, sessions, pricing) {
-  const attended = sessions
-    .filter((s) => s.clientId === clientId && s.status === 'attended')
-    .sort((a, b) => (a.date === b.date ? a.time.localeCompare(b.time) : a.date.localeCompare(b.date)))
+  const attended = sessions.filter((s) => s.clientId === clientId && s.status === 'attended')
 
   let cost = 0
-  attended.forEach((s, i) => {
-    const isGift = (i + 1) % FREE_EVERY === 0
-    if (!isGift) cost += s.price ?? fallbackSessionPrice(s, pricing)
+  attended.forEach((s) => {
+    cost += s.price ?? fallbackSessionPrice(s, pricing)
   })
 
-  const paid = payments.filter((p) => p.clientId === clientId).reduce((sum, p) => sum + p.amount, 0)
-  const attendedCount = attended.length
-  const sinceGift = attendedCount % FREE_EVERY
+  // paid = real money + promo bonuses granted at purchase time (e.g. «9+1»: 315 paid + 35 bonus)
+  const paid = payments
+    .filter((p) => p.clientId === clientId)
+    .reduce((sum, p) => sum + p.amount + (p.bonus ?? 0), 0)
 
   return {
     balance: paid - cost,
-    attendedCount,
-    sinceGift, // attended sessions since the last gift (0..9)
-    untilGift: FREE_EVERY - sinceGift, // how many left until the free one
-    nextIsGift: sinceGift === FREE_EVERY - 1,
+    attendedCount: attended.length,
   }
 }
 

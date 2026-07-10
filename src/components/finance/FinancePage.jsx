@@ -83,6 +83,7 @@ export default function FinancePage() {
                     <p className="text-sm font-semibold text-text-primary">{t.name}</p>
                     <p className="text-sm text-text-secondary">
                       {t.isUnlimited ? 'Безлимит на месяц' : sessionsLabel(t.sessionsCount)}
+                      {t.bonus > 0 && ` · 🎁 +${t.bonus} Br бонусом`}
                     </p>
                   </div>
                   <span className="text-base font-bold text-text-primary"><Money amount={t.price} /></span>

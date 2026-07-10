@@ -30,8 +30,10 @@ export default function PaymentForm({ open, onClose, defaultClientId }) {
     return computeMoney(clientId, payments, sessions, pricing).balance
   }, [clientId]) ?? null
 
+  const selectedType = types?.find((t) => t.id === typeId)
+  const typeBonus = selectedType?.bonus ?? 0
   const numericAmount = Number(amount) || 0
-  const balanceAfter = (balance ?? 0) + numericAmount
+  const balanceAfter = (balance ?? 0) + numericAmount + typeBonus
 
   function handleClientChange(id) {
     setClientId(id)
@@ -53,6 +55,8 @@ export default function PaymentForm({ open, onClose, defaultClientId }) {
       clientId,
       subscriptionTypeId: typeId,
       amount: numericAmount,
+      // bonus is frozen at purchase time so later edits to the type don't rewrite history
+      bonus: typeBonus,
       date,
       method,
     })
@@ -100,6 +104,12 @@ export default function PaymentForm({ open, onClose, defaultClientId }) {
 
         {typeId && amount !== '' && (
           <p className="rounded-xl bg-brand-soft px-3 py-2.5 text-sm text-text-primary">
+            {typeBonus > 0 && (
+              <>
+                🎁 Бонус акции: <b>+{typeBonus} Br</b> на баланс
+                <br />
+              </>
+            )}
             Баланс после оплаты:{' '}
             <b>{balanceAfter > 0 ? `+${balanceAfter}` : balanceAfter} Br</b>
             {balanceAfter > 0 && ' (предоплата — спишется за следующие тренировки)'}
