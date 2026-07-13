@@ -9,7 +9,6 @@ import { XIcon } from '../ui/icons'
 import WorkoutField from './WorkoutField'
 import { db } from '../../data/db'
 import { genId } from '../../utils/id'
-import { setSessionStatus } from '../../data/pricing'
 import { today, addDays, formatDateShort } from '../../utils/date'
 
 export default function SessionForm({ open, onClose, session, defaultClientId, defaultDate }) {
@@ -87,11 +86,6 @@ export default function SessionForm({ open, onClose, session, defaultClientId, d
   async function handleDelete() {
     await db.sessions.delete(session.id)
     setConfirmOpen(false)
-    onClose()
-  }
-
-  async function setStatus(status) {
-    await setSessionStatus(session, status, { workout, split: splitMeta })
     onClose()
   }
 
@@ -176,17 +170,6 @@ export default function SessionForm({ open, onClose, session, defaultClientId, d
           sessionId={session?.id}
           onSplitPick={setSplitMeta}
         />
-
-        {isEdit && (
-          <div className="grid grid-cols-2 gap-3">
-            <Button type="button" variant="secondary" onClick={() => setStatus('attended')}>
-              Пришёл
-            </Button>
-            <Button type="button" variant="secondary" onClick={() => setStatus('missed')}>
-              Не пришёл
-            </Button>
-          </div>
-        )}
 
         <Button type="submit" className="w-full">
           Сохранить
