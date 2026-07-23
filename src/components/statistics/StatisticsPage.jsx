@@ -1,11 +1,8 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
 import PageHeader from '../layout/PageHeader'
-import { StatusDot } from '../ui/Badge'
 import { CashIcon, CardIcon, TrendIcon, UsersIcon } from '../ui/icons'
 import SessionsByMethodChart from './SessionsByMethodChart'
 import { useDateRangeStats } from '../../hooks/useDateRangeStats'
-import { useClientsWithStatus } from '../../hooks/useClientDerived'
 import { today, addDays, startOfWeek, startOfMonth, endOfMonth } from '../../utils/date'
 import { sessionsLabel } from '../../utils/format'
 
@@ -28,8 +25,6 @@ export default function StatisticsPage() {
         : [customFrom, customTo]
 
   const stats = useDateRangeStats(from, to)
-  const clientsWithStatus = useClientsWithStatus() ?? []
-  const attention = clientsWithStatus.filter((c) => c.statusColor === 'warn')
 
   return (
     <>
@@ -95,9 +90,9 @@ export default function StatisticsPage() {
               <div className="rounded-2xl bg-white p-4">
                 <div className="flex items-center gap-2 text-brand">
                   <TrendIcon className="h-5 w-5" />
-                  <span className="text-sm font-medium">Без отметки</span>
+                  <span className="text-sm font-medium">Пропущено</span>
                 </div>
-                <p className="mt-1 text-xl font-bold text-text-primary">{sessionsLabel(stats.noMethodCount)}</p>
+                <p className="mt-1 text-xl font-bold text-text-primary">{sessionsLabel(stats.missedCount)}</p>
               </div>
               <div className="rounded-2xl bg-white p-4">
                 <div className="flex items-center gap-2 text-brand">
@@ -115,25 +110,6 @@ export default function StatisticsPage() {
               </div>
             </section>
           </>
-        )}
-
-        {attention.length > 0 && (
-          <section>
-            <h2 className="mb-2 px-5 text-base text-text-primary">Не указан способ оплаты</h2>
-            <div className="flex flex-col gap-2 px-4">
-              {attention.map(({ client, statusColor, label }) => (
-                <Link
-                  key={client.id}
-                  to={`/clients/${client.id}`}
-                  className="flex items-center gap-3 rounded-2xl bg-white px-4 py-3 active:bg-fog"
-                >
-                  <StatusDot status={statusColor} />
-                  <span className="min-w-0 flex-1 truncate text-sm font-semibold text-text-primary">{client.name}</span>
-                  <span className="shrink-0 text-sm text-text-secondary">{label}</span>
-                </Link>
-              ))}
-            </div>
-          </section>
         )}
       </div>
     </>

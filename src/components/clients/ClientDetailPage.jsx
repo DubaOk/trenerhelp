@@ -29,7 +29,7 @@ export default function ClientDetailPage() {
 
   if (!data) return null
 
-  const { client, sessions, statusColor, label } = data
+  const { client, sessions, label } = data
   const currentNotes = notes ?? client.notes ?? ''
   const currentNotebook = notebook ?? client.notebook ?? ''
 
@@ -76,7 +76,7 @@ export default function ClientDetailPage() {
               )}
               <p className="mt-0.5 text-sm text-text-secondary">С {formatDateShort(client.startDate)}</p>
             </div>
-            <Badge status={statusColor}>{label}</Badge>
+            <Badge status="none">{label}</Badge>
           </div>
 
           {client.phone && <ContactRow phone={client.phone} />}

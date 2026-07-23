@@ -11,7 +11,7 @@ export function useDateRangeStats(from, to) {
     const attended = sessions.filter((s) => s.status === 'attended' && inRange(s.date))
     const cashCount = attended.filter((s) => s.method === 'cash').length
     const receptionCount = attended.filter((s) => s.method === 'reception').length
-    const noMethodCount = attended.filter((s) => !s.method).length
+    const missedCount = sessions.filter((s) => s.status === 'missed' && inRange(s.date)).length
 
     const newClientsCount = clients.filter((c) => inRange(c.startDate)).length
 
@@ -33,7 +33,7 @@ export function useDateRangeStats(from, to) {
       attendedCount: attended.length,
       cashCount,
       receptionCount,
-      noMethodCount,
+      missedCount,
       newClientsCount,
       buckets,
     }

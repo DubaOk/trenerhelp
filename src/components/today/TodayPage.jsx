@@ -6,7 +6,6 @@ import Fab from '../layout/Fab'
 import SettingsSheet from '../layout/SettingsSheet'
 import { IconButton } from '../ui/Button'
 import { HomeIcon, GearIcon } from '../ui/icons'
-import EndingSoonBanner from './EndingSoonBanner'
 import BirthdayBanner from './BirthdayBanner'
 import TodayStats from './TodayStats'
 import TodaySessionRow from './TodaySessionRow'
@@ -40,7 +39,6 @@ export default function TodayPage() {
       <div className="flex flex-col gap-3 pb-24">
         <TodayStats sessions={sessions} />
         <BirthdayBanner />
-        <EndingSoonBanner />
 
         {sessions && sessions.length === 0 ? (
           <EmptyState

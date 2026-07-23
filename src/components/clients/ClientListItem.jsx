@@ -1,5 +1,4 @@
 import { Link } from 'react-router-dom'
-import { StatusDot } from '../ui/Badge'
 
 function initials(name) {
   return name
@@ -11,7 +10,7 @@ function initials(name) {
     .toUpperCase()
 }
 
-export default function ClientListItem({ client, statusColor, label, index = 0 }) {
+export default function ClientListItem({ client, label, index = 0 }) {
   return (
     <Link
       to={`/clients/${client.id}`}
@@ -23,9 +22,8 @@ export default function ClientListItem({ client, statusColor, label, index = 0 }
       </div>
       <div className="min-w-0 flex-1">
         <p className="truncate text-base font-semibold text-text-primary">{client.name}</p>
-        <p className="truncate text-sm text-text-secondary">{label}</p>
+        <p className="truncate text-sm text-text-secondary">{client.phone || label}</p>
       </div>
-      <StatusDot status={statusColor} className="shrink-0" />
     </Link>
   )
 }
