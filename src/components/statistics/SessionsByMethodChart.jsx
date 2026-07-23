@@ -1,13 +1,12 @@
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
-import { formatMoney } from '../../utils/format'
 
 const CASH = '#E2571A'
 const RECEPTION = '#7D5C00'
 
-export default function IncomeBarChart({ buckets }) {
+export default function SessionsByMethodChart({ buckets }) {
   const hasData = buckets.some((b) => b.cash > 0 || b.reception > 0)
   if (!hasData) {
-    return <p className="px-4 py-4 text-sm text-text-secondary">Нет платежей за выбранный период</p>
+    return <p className="px-4 py-4 text-sm text-text-secondary">Нет отмеченных тренировок за выбранный период</p>
   }
 
   return (
@@ -26,14 +25,14 @@ export default function IncomeBarChart({ buckets }) {
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={buckets} margin={{ top: 8, right: 12, bottom: 0, left: -8 }} barCategoryGap="25%">
             <XAxis dataKey="label" tick={{ fontSize: 11, fill: '#828282' }} axisLine={false} tickLine={false} />
-            <YAxis tick={{ fontSize: 11, fill: '#828282' }} axisLine={false} tickLine={false} width={52} />
+            <YAxis tick={{ fontSize: 11, fill: '#828282' }} axisLine={false} tickLine={false} width={28} allowDecimals={false} />
             <Tooltip
-              formatter={(value, name) => [formatMoney(value), name === 'cash' ? 'Наличные' : 'Ресепшн']}
+              formatter={(value, name) => [`${value}`, name === 'cash' ? 'Наличные' : 'Ресепшн']}
               labelStyle={{ color: '#202020' }}
               cursor={{ fill: 'rgba(0,0,0,0.04)' }}
             />
-            <Bar dataKey="cash" stackId="income" fill={CASH} />
-            <Bar dataKey="reception" stackId="income" fill={RECEPTION} radius={[4, 4, 0, 0]} stroke="#fff" strokeWidth={2} />
+            <Bar dataKey="cash" stackId="sessions" fill={CASH} />
+            <Bar dataKey="reception" stackId="sessions" fill={RECEPTION} radius={[4, 4, 0, 0]} stroke="#fff" strokeWidth={2} />
           </BarChart>
         </ResponsiveContainer>
       </div>

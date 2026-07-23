@@ -3,12 +3,11 @@ import { Link } from 'react-router-dom'
 import PageHeader from '../layout/PageHeader'
 import { StatusDot } from '../ui/Badge'
 import { CashIcon, CardIcon, TrendIcon, UsersIcon } from '../ui/icons'
-import IncomeBarChart from './IncomeBarChart'
+import SessionsByMethodChart from './SessionsByMethodChart'
 import { useDateRangeStats } from '../../hooks/useDateRangeStats'
 import { useClientsWithStatus } from '../../hooks/useClientDerived'
 import { today, addDays, startOfWeek, startOfMonth, endOfMonth } from '../../utils/date'
 import { sessionsLabel } from '../../utils/format'
-import Money from '../ui/Money'
 
 const PERIODS = [
   { key: 'week', label: 'Неделя' },
@@ -30,7 +29,7 @@ export default function StatisticsPage() {
 
   const stats = useDateRangeStats(from, to)
   const clientsWithStatus = useClientsWithStatus() ?? []
-  const attention = clientsWithStatus.filter((c) => c.statusColor === 'warn' || c.statusColor === 'danger')
+  const attention = clientsWithStatus.filter((c) => c.statusColor === 'warn')
 
   return (
     <>
@@ -71,8 +70,8 @@ export default function StatisticsPage() {
           <>
             <section className="px-4">
               <div className="rounded-[16px_0_0_0] bg-brand p-4 text-white">
-                <p className="text-sm opacity-80">Доход за период</p>
-                <p className="mt-1 text-3xl font-bold"><Money amount={stats.total} /></p>
+                <p className="text-sm opacity-80">Проведено тренировок</p>
+                <p className="mt-1 text-3xl font-bold">{stats.attendedCount}</p>
               </div>
               <div className="mt-2 grid grid-cols-2 gap-2">
                 <div className="rounded-2xl bg-white p-4">
@@ -80,14 +79,14 @@ export default function StatisticsPage() {
                     <CashIcon className="h-5 w-5" />
                     <span className="text-sm font-medium">Наличные</span>
                   </div>
-                  <p className="mt-1 text-xl font-bold text-text-primary"><Money amount={stats.cashTotal} /></p>
+                  <p className="mt-1 text-xl font-bold text-text-primary">{stats.cashCount}</p>
                 </div>
                 <div className="rounded-2xl bg-white p-4">
                   <div className="flex items-center gap-2 text-method-reception">
                     <CardIcon className="h-5 w-5" />
                     <span className="text-sm font-medium">Ресепшн</span>
                   </div>
-                  <p className="mt-1 text-xl font-bold text-text-primary"><Money amount={stats.receptionTotal} /></p>
+                  <p className="mt-1 text-xl font-bold text-text-primary">{stats.receptionCount}</p>
                 </div>
               </div>
             </section>
@@ -96,9 +95,9 @@ export default function StatisticsPage() {
               <div className="rounded-2xl bg-white p-4">
                 <div className="flex items-center gap-2 text-brand">
                   <TrendIcon className="h-5 w-5" />
-                  <span className="text-sm font-medium">Проведено</span>
+                  <span className="text-sm font-medium">Без отметки</span>
                 </div>
-                <p className="mt-1 text-xl font-bold text-text-primary">{sessionsLabel(stats.attendedCount)}</p>
+                <p className="mt-1 text-xl font-bold text-text-primary">{sessionsLabel(stats.noMethodCount)}</p>
               </div>
               <div className="rounded-2xl bg-white p-4">
                 <div className="flex items-center gap-2 text-brand">
@@ -110,9 +109,9 @@ export default function StatisticsPage() {
             </section>
 
             <section>
-              <h2 className="mb-2 px-5 text-base text-text-primary">Доход по неделям</h2>
+              <h2 className="mb-2 px-5 text-base text-text-primary">Тренировки по неделям</h2>
               <div className="mx-4 rounded-2xl bg-white py-4">
-                <IncomeBarChart buckets={stats.buckets} />
+                <SessionsByMethodChart buckets={stats.buckets} />
               </div>
             </section>
           </>
@@ -120,7 +119,7 @@ export default function StatisticsPage() {
 
         {attention.length > 0 && (
           <section>
-            <h2 className="mb-2 px-5 text-base text-text-primary">Требуют внимания</h2>
+            <h2 className="mb-2 px-5 text-base text-text-primary">Не указан способ оплаты</h2>
             <div className="flex flex-col gap-2 px-4">
               {attention.map(({ client, statusColor, label }) => (
                 <Link

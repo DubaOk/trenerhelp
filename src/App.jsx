@@ -6,7 +6,6 @@ import TodayPage from './components/today/TodayPage'
 import ClientsListPage from './components/clients/ClientsListPage'
 import ClientDetailPage from './components/clients/ClientDetailPage'
 import SchedulePage from './components/schedule/SchedulePage'
-import FinancePage from './components/finance/FinancePage'
 import StatisticsPage from './components/statistics/StatisticsPage'
 import { db } from './data/db'
 
@@ -50,7 +49,6 @@ export default function App() {
           <Route path="clients" element={<ClientsListPage />} />
           <Route path="clients/:clientId" element={<ClientDetailPage />} />
           <Route path="schedule" element={<SchedulePage />} />
-          <Route path="finance" element={<FinancePage />} />
           <Route path="statistics" element={<StatisticsPage />} />
         </Route>
       </Routes>

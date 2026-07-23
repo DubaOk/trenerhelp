@@ -5,7 +5,7 @@ import ConfirmDialog from '../layout/ConfirmDialog'
 import { DateField, TimeField } from '../ui/fields'
 import Picker from '../ui/Picker'
 import Button from '../ui/Button'
-import { XIcon } from '../ui/icons'
+import { XIcon, CashIcon, CardIcon } from '../ui/icons'
 import WorkoutField from './WorkoutField'
 import { db } from '../../data/db'
 import { genId } from '../../utils/id'
@@ -20,6 +20,7 @@ export default function SessionForm({ open, onClose, session, defaultClientId, d
   const [time, setTime] = useState(session?.time ?? '10:00')
   const [workout, setWorkout] = useState(session?.workout ?? '')
   const [splitMeta, setSplitMeta] = useState(session?.split ?? null)
+  const [method, setMethod] = useState(session?.method ?? null)
   const [repeatWeeks, setRepeatWeeks] = useState('0')
   const [confirmOpen, setConfirmOpen] = useState(false)
 
@@ -57,7 +58,7 @@ export default function SessionForm({ open, onClose, session, defaultClientId, d
     if (!clientId) return
 
     if (isEdit) {
-      await db.sessions.update(session.id, { clientId, date, time, workout, split: splitMeta })
+      await db.sessions.update(session.id, { clientId, date, time, workout, split: splitMeta, method })
     } else {
       const participants = [clientId, ...extraClientIds.filter((id) => id && id !== clientId)]
       const uniqueParticipants = [...new Set(participants)]
@@ -74,6 +75,7 @@ export default function SessionForm({ open, onClose, session, defaultClientId, d
             workout: i === 0 ? workout : '',
             split: i === 0 && participantId === clientId ? splitMeta : null,
             pairId,
+            method,
             status: 'planned',
           })
         }
@@ -170,6 +172,36 @@ export default function SessionForm({ open, onClose, session, defaultClientId, d
           sessionId={session?.id}
           onSplitPick={setSplitMeta}
         />
+
+        <div>
+          <p className="mb-1.5 text-sm font-medium text-text-secondary">Способ оплаты</p>
+          <div className="grid grid-cols-2 gap-3">
+            <button
+              type="button"
+              onClick={() => setMethod((m) => (m === 'cash' ? null : 'cash'))}
+              className={`press flex h-14 items-center justify-center gap-2 rounded-xl border-2 text-base font-semibold ${
+                method === 'cash'
+                  ? 'border-method-cash bg-method-cash-bg text-method-cash'
+                  : 'border-mist bg-white text-text-secondary'
+              }`}
+            >
+              <CashIcon className="h-5 w-5" />
+              Наличные
+            </button>
+            <button
+              type="button"
+              onClick={() => setMethod((m) => (m === 'reception' ? null : 'reception'))}
+              className={`press flex h-14 items-center justify-center gap-2 rounded-xl border-2 text-base font-semibold ${
+                method === 'reception'
+                  ? 'border-method-reception bg-method-reception-bg text-method-reception'
+                  : 'border-mist bg-white text-text-secondary'
+              }`}
+            >
+              <CardIcon className="h-5 w-5" />
+              Ресепшн
+            </button>
+          </div>
+        </div>
 
         <Button type="submit" className="w-full">
           Сохранить

@@ -40,6 +40,22 @@ db.version(4)
       })
   })
 
+db.version(5)
+  .stores({})
+  .upgrade(async (tx) => {
+    // The app no longer tracks amounts/prices at all — only how a session was paid
+    // (cash/reception). Purge historical monetary figures rather than just hiding them.
+    await tx.table('payments').clear()
+    await tx.table('subscriptionTypes').clear()
+    await tx.table('settings').delete('pricing')
+    await tx
+      .table('sessions')
+      .toCollection()
+      .modify((s) => {
+        delete s.price
+      })
+  })
+
 export const cloudEnabled = Boolean(databaseUrl)
 
 if (cloudEnabled) {

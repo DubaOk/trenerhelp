@@ -45,19 +45,6 @@
   --font-heading: 'Space Grotesk', 'Inter', system-ui, sans-serif;
 }
 
-/* NBRB font: official Belarusian ruble symbol at U+E901 */
-@font-face {
-  font-family: 'NBRB';
-  src: url('/fonts/nbrb.woff2') format('woff2'), url('/fonts/nbrb.woff') format('woff'),
-    url('/fonts/nbrb.ttf') format('truetype');
-  font-weight: 400;
-  font-display: swap;
-}
-
-.font-nbrb {
-  font-family: 'NBRB', var(--font-sans);
-}
-
 html {
   -webkit-tap-highlight-color: transparent;
   color-scheme: light;

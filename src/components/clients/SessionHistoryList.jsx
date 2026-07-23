@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import Badge from '../ui/Badge'
+import MethodTag from '../ui/MethodTag'
 import { formatDateShort } from '../../utils/date'
 import SessionForm from '../schedule/SessionForm'
 
@@ -32,7 +33,11 @@ export default function SessionHistoryList({ sessions }) {
             </span>
             {s.workout && <span className="block truncate text-xs text-text-secondary">{s.workout.split('\n')[0]}</span>}
           </span>
-          <Badge status={STATUS_COLOR[s.status]} className="shrink-0">{STATUS_LABEL[s.status]}</Badge>
+          {s.status === 'attended' && s.method ? (
+            <MethodTag method={s.method} className="shrink-0" />
+          ) : (
+            <Badge status={STATUS_COLOR[s.status]} className="shrink-0">{STATUS_LABEL[s.status]}</Badge>
+          )}
         </button>
       ))}
       {!showAll && sessions.length > PREVIEW_COUNT && (

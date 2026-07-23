@@ -12,9 +12,7 @@ import ClientForm from './ClientForm'
 import SessionHistoryList from './SessionHistoryList'
 import MeasurementForm from './MeasurementForm'
 import MeasurementChart from './MeasurementChart'
-import ClientPaymentsList from './ClientPaymentsList'
 import SessionForm from '../schedule/SessionForm'
-import PaymentForm from '../finance/PaymentForm'
 import ContactRow from './ContactRow'
 
 export default function ClientDetailPage() {
@@ -26,20 +24,18 @@ export default function ClientDetailPage() {
   const [deleteOpen, setDeleteOpen] = useState(false)
   const [sessionFormOpen, setSessionFormOpen] = useState(false)
   const [measurementFormOpen, setMeasurementFormOpen] = useState(false)
-  const [paymentFormOpen, setPaymentFormOpen] = useState(false)
   const [notes, setNotes] = useState(null)
   const [notebook, setNotebook] = useState(null)
 
   if (!data) return null
 
-  const { client, sessions, payments, subscriptionTypes, statusColor, label } = data
+  const { client, sessions, statusColor, label } = data
   const currentNotes = notes ?? client.notes ?? ''
   const currentNotebook = notebook ?? client.notebook ?? ''
 
   async function handleDelete() {
-    await db.transaction('rw', db.clients, db.sessions, db.payments, async () => {
+    await db.transaction('rw', db.clients, db.sessions, async () => {
       await db.sessions.where('clientId').equals(client.id).delete()
-      await db.payments.where('clientId').equals(client.id).delete()
       await db.clients.delete(client.id)
     })
     navigate('/clients', { replace: true })
@@ -83,7 +79,6 @@ export default function ClientDetailPage() {
             <Badge status={statusColor}>{label}</Badge>
           </div>
 
-
           {client.phone && <ContactRow phone={client.phone} />}
 
           <Button variant="secondary" className="mt-3 w-full" onClick={() => setEditOpen(true)}>
@@ -124,16 +119,6 @@ export default function ClientDetailPage() {
         </section>
 
         <section>
-          <div className="mb-2 flex items-center justify-between px-1">
-            <h2 className="text-base text-text-primary">Платежи</h2>
-            <Button variant="ghost" className="h-9 px-3 text-sm text-brand" onClick={() => setPaymentFormOpen(true)}>
-              Добавить платёж
-            </Button>
-          </div>
-          <ClientPaymentsList payments={payments} subscriptionTypes={subscriptionTypes} />
-        </section>
-
-        <section>
           <h2 className="mb-2 px-1 text-base text-text-primary">Заметки</h2>
           <div className="rounded-[16px_0_0_0] bg-ivory p-1">
             <textarea
@@ -156,11 +141,10 @@ export default function ClientDetailPage() {
       {measurementFormOpen && (
         <MeasurementForm open onClose={() => setMeasurementFormOpen(false)} client={client} />
       )}
-      {paymentFormOpen && <PaymentForm open onClose={() => setPaymentFormOpen(false)} defaultClientId={client.id} />}
       <ConfirmDialog
         open={deleteOpen}
         title={`Удалить клиента ${client.name}?`}
-        description="Все тренировки, платежи и замеры этого клиента будут удалены безвозвратно."
+        description="Все тренировки и замеры этого клиента будут удалены безвозвратно."
         onConfirm={handleDelete}
         onCancel={() => setDeleteOpen(false)}
       />

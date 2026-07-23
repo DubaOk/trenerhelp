@@ -1,6 +1,7 @@
 import Badge from '../ui/Badge'
-import { CheckIcon, XIcon } from '../ui/icons'
-import { setSessionStatus } from '../../data/pricing'
+import MethodTag from '../ui/MethodTag'
+import { CheckIcon, XIcon, CashIcon, CardIcon } from '../ui/icons'
+import { db } from '../../data/db'
 
 const STATUS_LABEL = { planned: 'Запланировано', attended: 'Пришёл', missed: 'Не пришёл' }
 const STATUS_COLOR = { planned: 'none', attended: 'ok', missed: 'danger' }
@@ -10,7 +11,12 @@ export default function TodaySessionRow({ session, client, onOpen, index = 0 }) 
     e.stopPropagation()
     // second tap on the same status resets back to planned
     const next = session.status === status ? 'planned' : status
-    await setSessionStatus(session, next)
+    await db.sessions.update(session.id, { status: next })
+  }
+
+  async function setMethod(e, method) {
+    e.stopPropagation()
+    await db.sessions.update(session.id, { method: session.method === method ? null : method })
   }
 
   return (
@@ -27,7 +33,28 @@ export default function TodaySessionRow({ session, client, onOpen, index = 0 }) 
           {client?.name ?? '—'}
           {session.pairId && <span className="ml-1.5 rounded-full bg-brand-soft px-2 py-0.5 text-xs font-medium text-graphite">сплит</span>}
         </p>
-        {session.workout ? (
+        {session.status === 'attended' ? (
+          session.method ? (
+            <MethodTag method={session.method} className="mt-0.5" />
+          ) : (
+            <div className="mt-1 flex flex-wrap gap-1.5">
+              <span
+                role="button"
+                onClick={(e) => setMethod(e, 'cash')}
+                className="press flex h-7 shrink-0 items-center gap-1 rounded-full bg-method-cash-bg px-2 text-xs font-medium text-method-cash"
+              >
+                <CashIcon className="h-3.5 w-3.5" /> Наличные
+              </span>
+              <span
+                role="button"
+                onClick={(e) => setMethod(e, 'reception')}
+                className="press flex h-7 shrink-0 items-center gap-1 rounded-full bg-method-reception-bg px-2 text-xs font-medium text-method-reception"
+              >
+                <CardIcon className="h-3.5 w-3.5" /> Ресепшн
+              </span>
+            </div>
+          )
+        ) : session.workout ? (
           <p className="truncate text-sm text-text-secondary">{session.workout.split('\n')[0]}</p>
         ) : (
           <Badge status={STATUS_COLOR[session.status]} className="mt-0.5">{STATUS_LABEL[session.status]}</Badge>

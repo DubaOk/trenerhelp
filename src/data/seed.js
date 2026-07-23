@@ -2,12 +2,10 @@ import { db } from './db'
 import { genId } from '../utils/id'
 import { addDays, today } from '../utils/date'
 
-// Defaults every new user gets: pricing, subscription types + an example split. No fake clients.
+// Defaults every new user gets: an example workout program. No fake clients, no money.
 export async function seedDefaults() {
-  await db.transaction('rw', db.subscriptionTypes, db.splits, db.settings, async () => {
-    if ((await db.subscriptionTypes.count()) > 0) return
-
-    await db.settings.put({ id: 'pricing', singlePrice: 35, pairPrice: 30 })
+  await db.transaction('rw', db.splits, async () => {
+    if ((await db.splits.count()) > 0) return
 
     await db.splits.add({
       id: genId(),
@@ -18,24 +16,14 @@ export async function seedDefaults() {
         { name: 'Спина + бицепс', text: 'Тяга верхнего блока 30кг 3х12\nТяга горизонтального блока 25кг 3х12\nСгибания с гантелями 2х6кг 3х12' },
       ],
     })
-
-    await db.subscriptionTypes.bulkAdd([
-      { id: genId(), name: 'Разовое', sessionsCount: 1, isUnlimited: false, price: 35 },
-      { id: genId(), name: 'Разовое (в паре)', sessionsCount: 1, isUnlimited: false, price: 30 },
-      { id: genId(), name: '10 занятий (акция 9+1)', sessionsCount: 10, isUnlimited: false, price: 315, bonus: 35 },
-    ])
   })
 }
 
 export async function seedDemo() {
   await seedDefaults()
-  await db.transaction('rw', db.clients, db.subscriptionTypes, db.payments, db.sessions, async () => {
+  await db.transaction('rw', db.clients, db.sessions, async () => {
     const count = await db.clients.count()
     if (count > 0) return
-
-    const subscriptionTypes = await db.subscriptionTypes.toArray()
-    const single = subscriptionTypes.find((t) => t.name === 'Разовое')
-    const promo = subscriptionTypes.find((t) => t.name === '10 занятий (акция 9+1)')
 
     const anna = {
       id: genId(),
@@ -70,16 +58,9 @@ export async function seedDemo() {
 
     await db.clients.bulkAdd([anna, boris, ekaterina])
 
-    await db.payments.bulkAdd([
-      { id: genId(), clientId: anna.id, subscriptionTypeId: promo.id, amount: promo.price, bonus: 35, date: addDays(today(), -20), method: 'cash' },
-      { id: genId(), clientId: boris.id, subscriptionTypeId: single.id, amount: single.price, date: addDays(today(), -15), method: 'reception' },
-      // Ekaterina paid 50 for a single (35) — 15 stays on her balance
-      { id: genId(), clientId: ekaterina.id, subscriptionTypeId: single.id, amount: 50, date: addDays(today(), -5), method: 'cash' },
-    ])
-
     const sessions = []
 
-    // Anna: 5 of 8 sessions attended, one missed, one planned today, one planned tomorrow
+    // Anna: 5 attended (mix of cash/reception), one missed, one planned today, one planned tomorrow
     const annaWorkout = 'Присед 40кг 3х10\nЖим лёжа 25кг 3х12\nТяга верхнего блока 30кг 3х12'
     const annaPastDates = [-18, -15, -11, -8, -4, -2]
     annaPastDates.forEach((offset, i) => {
@@ -89,21 +70,28 @@ export async function seedDemo() {
         date: addDays(today(), offset),
         time: '10:00',
         status: i === 1 ? 'missed' : 'attended',
-        price: i === 1 ? null : 35,
+        method: i === 1 ? null : i % 2 === 0 ? 'cash' : 'reception',
         workout: i === 1 ? '' : annaWorkout,
       })
     })
     sessions.push({ id: genId(), clientId: anna.id, date: today(), time: '09:00', status: 'planned' })
     sessions.push({ id: genId(), clientId: anna.id, date: addDays(today(), 1), time: '09:00', status: 'planned' })
 
-    // Boris: all 4 sessions attended, no future sessions (debt example)
+    // Boris: attended sessions, one still missing a payment method (demonstrates the reminder banner)
     const borisPastDates = [-14, -10, -6, -2]
-    borisPastDates.forEach((offset) => {
-      sessions.push({ id: genId(), clientId: boris.id, date: addDays(today(), offset), time: '18:00', status: 'attended', price: 35 })
+    borisPastDates.forEach((offset, i) => {
+      sessions.push({
+        id: genId(),
+        clientId: boris.id,
+        date: addDays(today(), offset),
+        time: '18:00',
+        status: 'attended',
+        method: i === borisPastDates.length - 1 ? null : 'reception',
+      })
     })
 
-    // Ekaterina: one attended, today's session, a couple more this week
-    sessions.push({ id: genId(), clientId: ekaterina.id, date: addDays(today(), -3), time: '11:00', status: 'attended', price: 35 })
+    // Ekaterina: one attended (cash), today's session, a couple more this week
+    sessions.push({ id: genId(), clientId: ekaterina.id, date: addDays(today(), -3), time: '11:00', status: 'attended', method: 'cash' })
     sessions.push({ id: genId(), clientId: ekaterina.id, date: today(), time: '17:00', status: 'planned' })
     sessions.push({ id: genId(), clientId: ekaterina.id, date: addDays(today(), 2), time: '11:00', status: 'planned' })
     sessions.push({ id: genId(), clientId: ekaterina.id, date: addDays(today(), 4), time: '11:00', status: 'planned' })

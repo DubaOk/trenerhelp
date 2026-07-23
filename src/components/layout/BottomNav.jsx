@@ -1,11 +1,10 @@
 import { NavLink } from 'react-router-dom'
-import { HomeIcon, UsersIcon, CalendarIcon, WalletIcon, ChartIcon } from '../ui/icons'
+import { HomeIcon, UsersIcon, CalendarIcon, ChartIcon } from '../ui/icons'
 
 const TABS = [
   { to: '/today', label: 'Сегодня', Icon: HomeIcon },
   { to: '/clients', label: 'Клиенты', Icon: UsersIcon },
   { to: '/schedule', label: 'Расписание', Icon: CalendarIcon },
-  { to: '/finance', label: 'Финансы', Icon: WalletIcon },
   { to: '/statistics', label: 'Статистика', Icon: ChartIcon },
 ]
 

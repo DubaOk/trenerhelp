@@ -4,40 +4,36 @@ import { addDays, startOfWeek, formatDateShort } from '../utils/date'
 
 export function useDateRangeStats(from, to) {
   return useLiveQuery(async () => {
-    const [payments, sessions, clients] = await Promise.all([
-      db.payments.toArray(),
-      db.sessions.toArray(),
-      db.clients.toArray(),
-    ])
+    const [sessions, clients] = await Promise.all([db.sessions.toArray(), db.clients.toArray()])
 
     const inRange = (date) => date >= from && date <= to
 
-    const periodPayments = payments.filter((p) => inRange(p.date))
-    const cashTotal = periodPayments.filter((p) => p.method === 'cash').reduce((s, p) => s + p.amount, 0)
-    const receptionTotal = periodPayments.filter((p) => p.method === 'reception').reduce((s, p) => s + p.amount, 0)
+    const attended = sessions.filter((s) => s.status === 'attended' && inRange(s.date))
+    const cashCount = attended.filter((s) => s.method === 'cash').length
+    const receptionCount = attended.filter((s) => s.method === 'reception').length
+    const noMethodCount = attended.filter((s) => !s.method).length
 
-    const attendedCount = sessions.filter((s) => s.status === 'attended' && inRange(s.date)).length
     const newClientsCount = clients.filter((c) => inRange(c.startDate)).length
 
-    // weekly buckets for the bar chart
+    // weekly buckets for the chart
     const buckets = []
     let cursor = startOfWeek(from)
     while (cursor <= to) {
       const bucketEnd = addDays(cursor, 6)
-      const bucketPayments = periodPayments.filter((p) => p.date >= cursor && p.date <= bucketEnd)
+      const bucketSessions = attended.filter((s) => s.date >= cursor && s.date <= bucketEnd)
       buckets.push({
         label: formatDateShort(cursor),
-        cash: bucketPayments.filter((p) => p.method === 'cash').reduce((s, p) => s + p.amount, 0),
-        reception: bucketPayments.filter((p) => p.method === 'reception').reduce((s, p) => s + p.amount, 0),
+        cash: bucketSessions.filter((s) => s.method === 'cash').length,
+        reception: bucketSessions.filter((s) => s.method === 'reception').length,
       })
       cursor = addDays(cursor, 7)
     }
 
     return {
-      cashTotal,
-      receptionTotal,
-      total: cashTotal + receptionTotal,
-      attendedCount,
+      attendedCount: attended.length,
+      cashCount,
+      receptionCount,
+      noMethodCount,
       newClientsCount,
       buckets,
     }

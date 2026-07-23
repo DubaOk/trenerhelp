@@ -4,13 +4,13 @@ import { StatusDot } from '../ui/Badge'
 
 export default function EndingSoonBanner() {
   const clientsWithStatus = useClientsWithStatus()
-  const attention = (clientsWithStatus ?? []).filter((c) => c.statusColor === 'warn' || c.statusColor === 'danger')
+  const attention = (clientsWithStatus ?? []).filter((c) => c.statusColor === 'warn')
 
   if (attention.length === 0) return null
 
   return (
     <div className="mx-4 rounded-[16px_0_0_0] bg-status-warn-bg p-4">
-      <p className="mb-2 text-sm font-semibold text-text-primary">Не оплачено</p>
+      <p className="mb-2 text-sm font-semibold text-text-primary">Не указан способ оплаты</p>
       <div className="flex flex-col gap-1.5">
         {attention.map(({ client, statusColor, label }) => (
           <Link key={client.id} to={`/clients/${client.id}`} className="flex items-center gap-2 py-0.5">
